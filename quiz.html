@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: El Descubrimiento de América</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans p-4 md:p-8 min-h-screen flex items-center justify-center">
+    
+    <div class="max-w-3xl w-full bg-slate-800 rounded-3xl shadow-2xl overflow-hidden border border-slate-700">
+        
+        <!-- Header del Quiz -->
+        <div class="bg-indigo-600 p-6 flex justify-between items-center shadow-md">
+            <h1 class="text-2xl font-bold text-white flex items-center">
+                <span class="text-3xl mr-2">🧠</span> Misión de Evaluación
+            </h1>
+            <div class="bg-indigo-800 px-4 py-2 rounded-full font-bold text-sm tracking-widest text-indigo-100">
+                PREGUNTA <span id="q-counter">1</span>/20
+            </div>
+        </div>
+
+        <div class="p-6 md:p-10">
+            <!-- Contenedor de la pregunta -->
+            <div id="quiz-container" class="fade-in">
+                <h2 class="text-2xl md:text-3xl font-semibold mb-8 leading-snug" id="question-text"></h2>
+                
+                <div id="options-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                    <!-- Opciones generadas por JS -->
+                </div>
+
+                <!-- Caja de Retroalimentación -->
+                <div id="feedback-box" class="hidden rounded-2xl p-6 mb-6 text-lg font-medium shadow-inner">
+                </div>
+
+                <button id="next-btn" onclick="nextQuestion()" class="hidden w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl transition duration-200 text-lg shadow-lg">
+                    Continuar ➡️
+                </button>
+            </div>
+
+            <!-- Pantalla Final -->
+            <div id="result-container" class="hidden text-center fade-in py-10">
+                <div class="text-7xl mb-6">🏆</div>
+                <h2 class="text-4xl font-black text-white mb-4">¡Misión Cumplida!</h2>
+                <p class="text-xl text-slate-400 mb-8">Has terminado tu entrenamiento sobre el Descubrimiento de América.</p>
+                
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <button onclick="location.reload()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 px-8 rounded-xl shadow-lg transition duration-200">
+                        🔄 Repetir Quiz
+                    </button>
+                    <button onclick="window.close()" class="bg-slate-700 hover:bg-slate-600 text-white font-bold py-4 px-8 rounded-xl shadow-lg transition duration-200">
+                        ❌ Cerrar ventana
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { q: "¿Qué evento bloqueó la Ruta de la Seda en 1453?", options: ["El descubrimiento de la pólvora", "La toma de Constantinopla por los otomanos", "La peste negra en Europa", "La caída del Imperio Romano"], answer: 1, explanation: "El Imperio Otomano conquistó Constantinopla, cerrando el paso comercial entre Europa y Asia." },
+            { q: "¿Qué productos eran los más buscados por los europeos en Asia?", options: ["Oro y plata", "Pólvora y armas", "Especias (para conservar la carne) y seda", "Madera y trigo"], answer: 2, explanation: "Las especias eran fundamentales para la conservación y el sabor de los alimentos en esa época." },
+            { q: "¿Qué rey rechazó primero el plan de Cristóbal Colón?", options: ["Rey Juan II de Portugal", "Rey Enrique VIII de Inglaterra", "Rey Carlos V de España", "Rey Luis XIV de Francia"], answer: 0, explanation: "Portugal rechazó a Colón porque ellos ya estaban buscando su propia ruta rodeando el continente africano." },
+            { q: "¿Qué monarcas finalmente financiaron el viaje de Colón?", options: ["Los Reyes de Italia", "Los Reyes Católicos (Isabel y Fernando)", "Los Reyes de Francia", "El Papa de Roma"], answer: 1, explanation: "Isabel de Castilla y Fernando de Aragón apoyaron a Colón tras terminar la Reconquista en Granada." },
+            { q: "¿Cómo se llamó el contrato firmado entre Colón y los Reyes Católicos?", options: ["El Tratado de Tordesillas", "El Pacto de Madrid", "Las Capitulaciones de Santa Fe", "El Acuerdo de Indias"], answer: 2, explanation: "En las Capitulaciones de Santa Fe, le prometieron a Colón ser Virrey y darle el 10% de las riquezas." },
+            { q: "¿Cuál fue el error de cálculo de Cristóbal Colón?", options: ["Creía que la Tierra era plana", "Creía que la Tierra era más grande de lo que es", "Creía que la Tierra era mucho más pequeña de lo que es", "Calculó mal la cantidad de comida"], answer: 2, explanation: "Colón sabía que la Tierra era redonda, pero la imaginaba más pequeña, por lo que pensó que Asia estaba más cerca." },
+            { q: "¿De qué puerto zarpó Colón en su primer viaje?", options: ["Puerto de Cádiz", "Puerto de Barcelona", "Puerto de Sevilla", "Puerto de Palos"], answer: 3, explanation: "Las tres carabelas salieron del Puerto de Palos de la Frontera el 3 de agosto de 1492." },
+            { q: "¿Cómo se llamaban los tres barcos del primer viaje?", options: ["La Santa María, La Pinta y La Niña", "La Victoria, La Trinidad y La Española", "La Gallega, La Pinta y La Niña", "San Salvador, La Pinta y La Niña"], answer: 0, explanation: "Estas tres famosas carabelas protagonizaron el primer viaje." },
+            { q: "¿En qué fecha exacta avistaron tierra?", options: ["12 de septiembre de 1492", "12 de octubre de 1492", "15 de agosto de 1492", "3 de noviembre de 1492"], answer: 1, explanation: "El 12 de octubre de 1492 se escuchó el grito de '¡Tierra a la vista!'." },
+            { q: "¿Cómo llamaban los indígenas a la primera isla a la que llegaron?", options: ["Cuba", "La Española", "Guanahaní", "Borinquén"], answer: 2, explanation: "Los locales la llamaban Guanahaní. Colón le puso 'San Salvador'." },
+            { q: "¿Qué isla actual fue bautizada como 'La Española'?", options: ["Cuba", "República Dominicana y Haití", "Puerto Rico", "Jamaica"], answer: 1, explanation: "La Española hoy en día está dividida en dos países: República Dominicana y Haití." },
+            { q: "¿Cuál era el objetivo principal del SEGUNDO viaje de Colón?", options: ["Explorar el Océano Pacífico", "La colonización masiva", "Llegar a la China", "Conquistar el Imperio Azteca"], answer: 1, explanation: "El segundo viaje no fue de exploración, fue una misión de colonización con más de 1.200 hombres y animales." },
+            { q: "¿En qué viaje tocó Colón tierra firme en el continente por primera vez?", options: ["Primer viaje", "Segundo viaje", "Tercer viaje", "Cuarto viaje"], answer: 2, explanation: "En su tercer viaje (1498), llegó a las costas de la actual Venezuela." },
+            { q: "¿Qué región exploró Colón en su CUARTO y último viaje?", options: ["Las costas de Norteamérica (Florida)", "El sur de Argentina", "Centroamérica (Honduras, Nicaragua, Costa Rica, Panamá)", "El río Amazonas"], answer: 2, explanation: "En su último viaje buscaba desesperadamente un estrecho hacia Asia bordeando Centroamérica." },
+            { q: "¿De qué estaba convencido Colón el día que murió (1506)?", options: ["De que había descubierto América", "De que había llegado a las costas de Asia", "De que la Tierra era plana", "De que había encontrado Oceanía"], answer: 1, explanation: "Colón murió sin saber que había descubierto un nuevo continente; siempre creyó que estaba en Asia." },
+            { q: "¿Por qué el continente se llama 'América'?", options: ["En honor a un rey español", "Por Américo Vespucio", "Era una palabra indígena", "Por un capitán del barco"], answer: 1, explanation: "El navegante Américo Vespucio demostró que era un continente nuevo, y en su honor se le puso ese nombre." },
+            { q: "¿Qué animales NO existían en América y fueron traídos por los españoles?", options: ["Llamas y alpacas", "Caballos, vacas y cerdos", "Pavos y águilas", "Perros"], answer: 1, explanation: "Los caballos y el ganado fueron introducidos en el segundo viaje de Colón." },
+            { q: "¿Qué le pasó a Colón al final de su tercer viaje?", options: ["Fue nombrado Rey", "Se quedó a vivir en Cuba", "Fue arrestado y devuelto a España encadenado", "Descubrió el Imperio Inca"], answer: 2, explanation: "Debido a una mala administración y revueltas, fue arrestado y devuelto preso a España." },
+            { q: "¿Qué islas descubrió Colón en su segundo viaje?", options: ["Las Islas Canarias", "Puerto Rico y Jamaica", "Las Islas Galápagos", "Las Bahamas"], answer: 1, explanation: "En 1493, en su gran viaje colonizador, avistó Puerto Rico y Jamaica." },
+            { q: "¿Por qué a los nativos americanos se les llamó 'indios'?", options: ["Porque vestían similar a los habitantes de la India", "Porque Colón pensó que había llegado a Las Indias (Asia)", "Porque era el nombre de su tribu", "Por una traducción errónea"], answer: 1, explanation: "El término nació del error geográfico de Colón al creer que estaba en Las Indias." }
+        ];
+
+        let currentQ = 0;
+
+        function renderQuestion() {
+            const q = questions[currentQ];
+            document.getElementById('q-counter').innerText = currentQ + 1;
+            document.getElementById('question-text').innerText = q.q;
+            
+            const grid = document.getElementById('options-grid');
+            grid.innerHTML = '';
+            
+            q.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = "text-left w-full bg-slate-700 hover:bg-slate-600 border-2 border-slate-600 text-slate-200 font-medium p-5 rounded-2xl transition-all duration-200 transform hover:-translate-y-1 shadow-sm";
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(index, btn);
+                grid.appendChild(btn);
+            });
+
+            document.getElementById('feedback-box').classList.add('hidden');
+            document.getElementById('next-btn').classList.add('hidden');
+        }
+
+        function checkAnswer(selectedIndex, selectedBtn) {
+            const q = questions[currentQ];
+            const buttons = document.getElementById('options-grid').children;
+            const feedbackBox = document.getElementById('feedback-box');
+
+            // Deshabilitar todos los botones
+            for(let btn of buttons) {
+                btn.disabled = true;
+                btn.classList.remove('hover:-translate-y-1', 'hover:bg-slate-600');
+            }
+
+            if(selectedIndex === q.answer) {
+                selectedBtn.className = "text-left w-full bg-green-900 border-2 border-green-500 text-green-100 font-bold p-5 rounded-2xl";
+                feedbackBox.className = "rounded-2xl p-6 mb-6 text-lg font-medium shadow-inner bg-green-900/50 border border-green-500 text-green-100 fade-in";
+                feedbackBox.innerHTML = "✅ <strong>¡Correcto!</strong> " + q.explanation;
+            } else {
+                selectedBtn.className = "text-left w-full bg-red-900 border-2 border-red-500 text-red-100 font-bold p-5 rounded-2xl opacity-80";
+                buttons[q.answer].className = "text-left w-full bg-green-900 border-2 border-green-500 text-green-100 font-bold p-5 rounded-2xl shadow-lg shadow-green-900/50";
+                feedbackBox.className = "rounded-2xl p-6 mb-6 text-lg font-medium shadow-inner bg-red-900/30 border border-red-500 text-red-100 fade-in";
+                feedbackBox.innerHTML = "❌ <strong>Incorrecto.</strong> " + q.explanation;
+            }
+
+            feedbackBox.classList.remove('hidden');
+            document.getElementById('next-btn').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentQ++;
+            if(currentQ < questions.length) {
+                renderQuestion();
+            } else {
+                document.getElementById('quiz-container').classList.add('hidden');
+                document.getElementById('result-container').classList.remove('hidden');
+            }
+        }
+
+        // Iniciar quiz
+        renderQuestion();
+    </script>
+</body>
+</html>
